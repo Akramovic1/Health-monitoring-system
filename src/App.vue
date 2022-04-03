@@ -6,11 +6,44 @@
               <!-- <img src="../src/bigdata.png" alt="logo" style="width:80px"> -->
               </p>
             <div class="menu_links">
-                <a href="" class="link">CPU Health</a>
-                <a href="" class="link">DISK Health</a>
-                <a href="" class="link">RAM Health</a>
-                <a href="" class="link">PEAK Health</a>
+                <a  @click = "myToggle(CPUService)" class="link">CPU Health</a>
+                <a  @click = "myToggle(DiskService)" class="link">DISK Health</a>
+                <a  @click = "myToggle(RAMService)" class="link">RAM Health</a>
+                <a  @click = "myToggle(PeakService)" class="link">PEAK Health</a>
+                <div class="text-xs-center">
+                    <v-dialog
+                    v-model="dialog"
+                    width="500"
+                    hight="500"
+                    >
 
+                    <v-card>
+                        <v-card-title
+                        class="headlin lighten-2"
+                        primary-title
+                        >
+                        {{this.Title}}
+                        </v-card-title>
+
+                        <v-card-text>
+                        {{this.singleContent}}
+                        </v-card-text>
+
+                        <v-divider></v-divider>
+
+                        <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            color="primary"
+                            flat
+                            @click="dialog = false"
+                        >
+                            OK
+                        </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                    </v-dialog>
+                </div>
             </div>
             <div class="menu_icon">
                 <span class="icon"></span>
@@ -50,8 +83,85 @@
             </div>
             <div class="text">
                 <article>
-                    <p></p>
-                    <button>FULL Report</button>
+                    <p>
+                        <v-container >
+                            <v-row>
+                            <v-col
+                                cols="12"
+                                lg="6"
+                            >
+                                <v-menu
+                                ref="menu1"
+                                v-model="menu1"
+                                :close-on-content-click="true"
+                                transition="scale-transition"
+                                offset-y
+                                max-width="290px"
+                                min-width="auto"
+                                >
+                                <template v-slot:activator="{ on, attrs }"
+                                 >
+                                    <v-text-field
+                                    dark
+                                    color="#FB8A8A"
+                                    v-model="dateFormatted"
+                                    label="Start Date"
+                                    hint="DD/MM/YYYY format"
+                                    persistent-hint
+                                    prepend-icon="mdi-calendar"
+                                    v-bind="attrs"
+                                    @blur="date = parseDate(dateFormatted)"
+                                    v-on="on"
+                                    ></v-text-field>
+                                </template>
+                                <v-date-picker
+                                    color="#FB8A8A"
+                                    v-model="date"
+                                    no-title
+                                    @input="menu1 = true"
+                                ></v-date-picker>
+                                </v-menu>
+                            </v-col>
+
+                            <v-col
+                                color="#FB8A8A"
+                                cols="12"
+                                lg="6"
+                            >
+                                <v-menu
+                                color="#FB8A8A"
+                                v-model="menu2"
+                                :close-on-content-click="true"
+                                transition="scale-transition"
+                                offset-y
+                                max-width="290px"
+                                min-width="auto"
+                                >
+                                <template v-slot:activator="{ on, attrs }" color="#FB8A8A">
+                                    <v-text-field
+                                    dark
+                                    color="#FB8A8A"
+                                    v-model="computedDateFormatted"
+                                    label="End Date"
+                                    hint="DD/MM/YYYY format"
+                                    persistent-hint
+                                    prepend-icon="mdi-calendar"
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    ></v-text-field>
+                                </template>
+                                <v-date-picker
+                                    color="#FB8A8A"
+                                    v-model="date"
+                                    no-title
+                                    @input="menu2 = true"
+                                ></v-date-picker>
+                                </v-menu>
+                            </v-col>
+                            </v-row>
+                        </v-container>
+                    </p>
+                    <button @click="myToggle(FullReport)">FULL Report</button>
                 </article>
             </div>
 
@@ -66,15 +176,48 @@ export default {
   name: 'App',
 
   components: {
-    
   },
+    methods:{
+        myToggle:function(obj){
+            this.dialog = !this.dialog;
+            this.Title = obj.title;
+            if(obj.title == "Full Report"){
+                this.singleContent = this.singleContent = this.CPUService.content + this.RAMService.content + this.DiskService.content + this.PeakService.content;
+            }else{
+                this.singleContent = obj.content;
+            }
+            
+        }
+    },
  mounted: function() {
    const Parallax = require('parallax-js')
    var scene = document.getElementById('scene');
    //eslint-disable-next-line
    var parallax = new Parallax(scene);
+  
  },
   data: () => ({
+    dialog: false,
+    Title:'',
+    CPUService:{
+        title: 'CPU Service',
+        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',   
+    },
+    RAMService:{
+        title: 'RAM Service',
+        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    },
+    DiskService:{
+        title: 'Disk Service',
+        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    },
+    PeakService:{
+        title: 'Peak Service',
+        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    },
+    FullReport:{
+        title: "Full Report",
+    }
     //
   }),
 };
@@ -437,11 +580,11 @@ nav {
         // Text and Button container
         .text {
             width: 60%;
-            height: 40%;
+            height: 30%;
             min-width: 400px;
             min-height: 500px;
             position: absolute;
-            margin: 40px 0;
+            margin: 60px 0;
             animation: text 0.6s 1.8s ease backwards;
 
             @keyframes text {
@@ -476,7 +619,6 @@ nav {
                 }
 
                 p {
-                    color: white;
                     font-size: 18px;
                     letter-spacing: 0.6px;
                     margin-bottom: 40px;
