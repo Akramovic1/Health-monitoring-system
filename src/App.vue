@@ -6,10 +6,11 @@
               <!-- <img src="../src/bigdata.png" alt="logo" style="width:80px"> -->
               </p>
             <div class="menu_links">
-                <a  @click = "myToggle(CPUService)" class="link">CPU Health</a>
-                <a  @click = "myToggle(DiskService)" class="link">DISK Health</a>
-                <a  @click = "myToggle(RAMService)" class="link">RAM Health</a>
-                <a  @click = "myToggle(PeakService)" class="link">PEAK Health</a>
+                <a  @click = "myToggleCPU(CPUService)" class="link">CPU Health</a>
+                <a  @click = "myToggleDISK(DiskService)" class="link">DISK Health</a>
+                <a  @click = "myToggleRAM(RAMService)" class="link">RAM Health</a>
+                <a  @click = "myTogglePEAK(PeakService)" class="link">PEAK Health</a>
+                <a  @click = "myToggleCOUNT(CountService)" class="link">Count Service</a>
                 <div class="text-xs-center">
                     <v-dialog
                     v-model="dialog"
@@ -104,7 +105,7 @@
                                     <v-text-field
                                     dark
                                     color="#FB8A8A"
-                                    v-model="dateFormatted"
+                                    v-model="fromdate"
                                     label="Start Date"
                                     hint="DD/MM/YYYY format"
                                     persistent-hint
@@ -116,7 +117,7 @@
                                 </template>
                                 <v-date-picker
                                     color="#FB8A8A"
-                                    v-model="date"
+                                    v-model="fromdate"
                                     no-title
                                     @input="menu1 = true"
                                 ></v-date-picker>
@@ -141,7 +142,7 @@
                                     <v-text-field
                                     dark
                                     color="#FB8A8A"
-                                    v-model="computedDateFormatted"
+                                    v-model="todate"
                                     label="End Date"
                                     hint="DD/MM/YYYY format"
                                     persistent-hint
@@ -152,7 +153,7 @@
                                 </template>
                                 <v-date-picker
                                     color="#FB8A8A"
-                                    v-model="date"
+                                    v-model="todate"
                                     no-title
                                     @input="menu2 = true"
                                 ></v-date-picker>
@@ -161,7 +162,7 @@
                             </v-row>
                         </v-container>
                     </p>
-                    <button @click="myToggle(FullReport)">FULL Report</button>
+                    <button @click="myToggleFULL(FullReport)">FULL Report</button>
                 </article>
             </div>
 
@@ -171,37 +172,150 @@
 </template>
 
 <script>
-
+import axios from "axios"
 export default {
   name: 'App',
 
   components: {
   },
     methods:{
-        myToggle:function(obj){
-            this.dialog = !this.dialog;
-            this.Title = obj.title;
-            if(obj.title == "Full Report"){
-                this.singleContent = this.singleContent = this.CPUService.content + this.RAMService.content + this.DiskService.content + this.PeakService.content;
-            }else{
-                this.singleContent = obj.content;
-            }
-            
-        }
+        myToggleFULL:function(obj){
+
+          // this.da=this.myToggleCPU();
+          // this.da+=this.myToggleRAM();
+          // this.da+=this.myToggleDISK();
+          // this.da+=this.myTogglePEAK();
+          // this.da+=this.myToggleCOUNT();
+          // this.singleContent = this.da
+          // this.dialog = !this.dialog;
+          // this.Title = obj.title;
+
+          axios.get("http://localhost:8080/api/get", {
+            params: {
+              type: "CPU",
+              startDate:this.fromdate,
+              endDate:this.todate,
+            },
+          })
+              .then((Response) => {
+                const Data = Response.data
+                this.singleContent = Data
+                this.dialog = !this.dialog;
+                this.Title = obj.title;
+                return Data;
+              })
+          //   if(obj.title == "Full Report"){
+          //     this.singleContent = this.CPUService.content + this.RAMService.content + this.DiskService.content + this.PeakService.content;
+          //   }else if(obj.title == "CPU Service"){
+          //     this.singleContent = obj.content;
+          //   }else if(obj.title == "RAM Service"){
+          //     this.singleContent = obj.content;
+          //   }else if(obj.title == "Disk Service"){
+          //     this.singleContent = obj.content;
+          //   }else if(obj.title == "Peak Service"){
+          //     this.singleContent = obj.content;
+          //   }else if(obj.title == "Count Service"){
+          //     this.singleContent = obj.content;
+          //   }
+        },
+      myToggleCPU:function(obj){
+        axios.get("http://localhost:8080/api/get", {
+          params: {
+            type: "CPU",
+            startDate:this.fromdate,
+            endDate:this.todate,
+          },
+        })
+            .then((Response) => {
+              const Data = Response.data
+              this.singleContent = Data
+              this.dialog = !this.dialog;
+              this.Title = obj.title;
+              return Data;
+            })
+
+      },
+      myToggleRAM:function(obj){
+        axios.get("http://localhost:8080/api/get", {
+          params: {
+            type: "RAM",
+            startDate:this.fromdate,
+            endDate:this.todate,
+          },
+        })
+            .then((Response) => {
+              const Data = Response.data
+              this.singleContent = Data
+              this.dialog = !this.dialog;
+              this.Title = obj.title;
+              return Data;
+            })
+      },
+      myToggleDISK:function(obj){
+        axios.get("http://localhost:8080/api/get", {
+          params: {
+            type: "DISK",
+            startDate:this.fromdate,
+            endDate:this.todate,
+          },
+        })
+            .then((Response) => {
+              const Data = Response.data
+              this.singleContent = Data
+              this.dialog = !this.dialog;
+              this.Title = obj.title;
+              return Data;
+            })
+      },
+      myTogglePEAK:function(obj){
+        axios.get("http://localhost:8080/api/get", {
+          params: {
+            type: "ForEach",
+            startDate:this.fromdate,
+            endDate:this.todate,
+          },
+        })
+            .then((Response) => {
+              const Data = Response.data
+              this.singleContent = Data
+              this.dialog = !this.dialog;
+              this.Title = obj.title;
+              return Data;
+            })
+      },
+      myToggleCOUNT:function(obj){
+        axios.get("http://localhost:8080/api/get", {
+          params: {
+            type: "Count",
+            startDate:this.fromdate,
+            endDate:this.todate,
+          },
+        })
+            .then((Response) => {
+              const Data = Response.data
+              this.singleContent = Data
+              this.dialog = !this.dialog;
+              this.Title = obj.title;
+              return Data;
+            })
+      },
     },
  mounted: function() {
    const Parallax = require('parallax-js')
    var scene = document.getElementById('scene');
    //eslint-disable-next-line
    var parallax = new Parallax(scene);
-  
+
  },
   data: () => ({
+    todate:'',
+    fromdate:'',
+    da:'',
     dialog: false,
     Title:'',
     CPUService:{
         title: 'CPU Service',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',   
+        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
     },
     RAMService:{
         title: 'RAM Service',
@@ -217,6 +331,9 @@ export default {
     },
     FullReport:{
         title: "Full Report",
+    },CountService:{
+      title: "Count Service",
+      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
     }
     //
   }),
